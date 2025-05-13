@@ -5,7 +5,8 @@
             :url "https://www.eclipse.org/legal/epl-2.0/"}
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [io.weft/gregor "1.0.0"]
-                 [clj-statsd "0.4.2"]]
+                 [clj-statsd "0.4.2"]
+                 [org.clojure/core.async "1.8.741"]]
   :main ^:skip-aot clj-core-async-poc.producer
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all
