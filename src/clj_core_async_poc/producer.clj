@@ -41,6 +41,7 @@
                      start-epoch
                      (System/currentTimeMillis)))))
 
+
 (comment
   (def producer (get-producer "localhost:9092"))
   (def messages-per-minute 100) ;; produce 100 messages per minuites
