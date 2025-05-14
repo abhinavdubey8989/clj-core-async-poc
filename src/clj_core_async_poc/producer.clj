@@ -1,25 +1,29 @@
 (ns clj-core-async-poc.producer
-  (:require [gregor.core :as gregor]
-            [clj-statsd :as statsd]))
+  (:require [cheshire.core :as cc]
+            [clj-statsd :as statsd]
+            [gregor.core :as gregor]))
 
 
 (defn get-producer
+  "Given server config, return kafka producer object"
   [servers]
   (gregor/producer servers
                    {"value.serializer" "org.apache.kafka.common.serialization.StringSerializer"}))
 
 
 (defn push-event
+  "Push data to kafka using producer"
   [producer data]
   (gregor/send producer
                (:topic data)
                (:partition data)
                (:key data)
-               (.toString (:value data)))
+               (cc/generate-string (:value data)))
   (statsd/increment "event-production.success"))
 
 
 (defn start-producer
+  "Run producer at specified RPM & for specified duration"
   [producer data rpm duration]
   (let [start-epoch (System/currentTimeMillis)
         rps (/ 60 rpm) ;; Convert RPM to RPS
@@ -43,16 +47,35 @@
 
 
 (comment
+
+  ;; create-topic : run this only once
+  (def partition-count 3)
+  (def replication-factor 1)
+  (gregor/create-topic {:connection-string "localhost:2181"} ;; zookeeper cordinates
+                       "core_async_poc"
+                       {:partitions partition-count
+                        :replication-factor replication-factor})
+
   (def producer (get-producer "localhost:9092"))
   (def messages-per-minute 100) ;; produce 100 messages per minuites
   (def production-time-seconds (* 2 60)) ;; producer messages for 2 minutes
 
+  ;; run producer at specified RPM & for specified duration
   (start-producer producer
                   {:topic "core_async_poc"
-                   :partition 0
+                   :partition (rand-int partition-count)
                    :key nil
                    :value {:times (* 10000 10000)
                            :num (* 1000 1000)}}
                   messages-per-minute
-                  production-time-seconds))
+                  production-time-seconds)
+
+  ;; produce 1 msg only
+  (push-event producer
+              {:topic "core_async_poc"
+               :partition (rand-int partition-count)
+               :key nil
+               :value {:id 1212
+                       :times (* 10000 10000)
+                       :num (* 1000 1000)}}))
 
