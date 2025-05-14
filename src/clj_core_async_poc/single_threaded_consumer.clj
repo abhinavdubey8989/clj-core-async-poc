@@ -1,9 +1,11 @@
 (ns clj-core-async-poc.single-threaded-consumer
-  (:require [gregor.core :as gregor]
-            [clj-statsd :as statsd]))
+  (:require [cheshire.core :as cc]
+            [clj-statsd :as statsd]
+            [gregor.core :as gregor]))
 
 
 (defn get-consumer
+  "Return kafka consumer object"
   [config]
   (gregor/consumer (:servers config)
                    (:group-id config)
@@ -12,8 +14,10 @@
 
 
 (defn process-event
+  "Business logic to be executed for each event"
   [event]
-  (let [start-time (System/currentTimeMillis)]
+  (let [start-time (System/currentTimeMillis)
+        event (cc/parse-string event true)]
 
     ;; simulate work : find square-root of a number repeatedly
     (dotimes [_ (:times event)]
@@ -27,10 +31,11 @@
                 :duration elapsed-seconds}))
 
     ;; increment metric
-    (statsd/increment "event-consumption.success")))
+    (statsd/increment "single-threaded-consumer.event-consumption.success")))
 
 
 (defn start-consumer-polling
+  "Start polling for kafka messages"
   [consumer]
   (loop []
     (let [records (gregor/poll consumer)]
