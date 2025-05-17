@@ -1,0 +1,25 @@
+{:producer-config {:messages-per-minute 100
+                   :duration-seconds    10}
+ :zookeeper       {:conn-string " mtr_host:2181"}
+ :kafka           {:conn-string "mtr_host:9092"
+                   
+                   ;; uncomment one of these
+                   :use_topic         :single-threaded
+                   ;:use_topic         :multi-threaded
+
+         ;; all the below configs are drive by "use_topic" above
+                   :topic-names       {:single-threaded "core_async_poc_single_th_1"
+                                       :multi-threaded  "core_async_poc_multi_th_1"}
+                   :topic-paritions   {:single-threaded 3
+                                       :multi-threaded  3}
+                   :topic-replication {:single-threaded 1
+                                       :multi-threaded  1}
+                   :consumer-group-id {:single-threaded "grp-single-th-1"
+                                       :multi-threaded  "grp-multi-th-1"}}
+ :worker-config   {:count       10
+                   :buffer-size 100}
+ :statsd          {:host " mtr_host"
+                   :port 8125}
+ :metric-prefix {:producer "local-producer"
+                 :single-threaded "local-single-th"
+                 :multi-threaded "local-multi-th"}}

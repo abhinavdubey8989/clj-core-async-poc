@@ -1,8 +1,18 @@
 (ns clj-core-async-poc.multi-threaded-consumer
-  (:require [cheshire.core :as cc]
+  (:require [clojure.edn :as edn]
+            [clojure.java.io :as io]
+            [cheshire.core :as cc]
             [clj-statsd :as statsd]
             [clojure.core.async :as async :refer [<!! >!!]]
             [gregor.core :as gregor]))
+
+
+
+(def config
+  (-> "config.edn"
+      io/resource
+      slurp
+      edn/read-string))
 
 
 (defonce worker-channels (atom []))
@@ -34,7 +44,8 @@
                 :duration elapsed-seconds}))
 
     ;; increment metric
-    (statsd/increment "multi-threaded-consumer.event-consumption.success")))
+    (statsd/increment (format "%s.event-consumption.success"
+                              (get-in config [:metric-prefix :multi-threaded])))))
 
 
 (defn worker-index
@@ -84,16 +95,23 @@
       (recur))))
 
 
+(defn main
+  []
+  (statsd/setup (get-in config [:statsd :host])
+                (get-in config [:statsd :port]))
+  (let [topic (get-in config [:kafka :topic-names :multi-threaded])
+        consumer (get-consumer {:servers  (get-in config [:kafka :conn-string])
+                                :group-id (get-in config [:kafka :consumer-group-id :multi-threaded])
+                                :topics   [topic]
+                                :config   {"value.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"}})
+        ;; Run consumer on a separate thread so that it doesn't block the REPL
+        consumer-thread (future (start-consumer-polling consumer
+                                                        (get-in config [:worker-config :count])
+                                                        (get-in config [:worker-config :buffer-size])))]
+    (print (format "started multi threaded consumer using topic %s ... "
+                   topic))))
+
 (comment
-  (def consumer (get-consumer {:servers "localhost:9092"
-                               :group-id "group-2"
-                               :topics ["core_async_poc"]
-                               :config {"value.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"}}))
-
-  (def worker-count 10)
-  (def buffer-size 100)
-
-  ;; Run consumer on a separate thread so that it doesn't block the REPL
-  (def consumer-thread (future (start-consumer-polling consumer
-                                                       worker-count
-                                                       buffer-size))))
+  ;; start consumption of msgs by invoking the main fn
+  (main)
+  )
