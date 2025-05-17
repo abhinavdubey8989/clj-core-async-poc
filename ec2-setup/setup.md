@@ -1,9 +1,9 @@
 
-# 1 Spawn ec2
-- spawn ec2 of type : t2.2xLarge
+# 1 Spawn ec2 for running clojure scripts
+- spawn ec2 of type : t2.2xLarge (8 vCPU & 32 GB RAM)
 
 # 2 ssh into EC2
-ssh -i ~/Documents/ad/aws-and-docker/0_secrets/aws_ad89.pem ubuntu@13.201.32.143
+ssh -i ~/Documents/ad/aws-and-docker/0_secrets/aws_ad89.pem ubuntu@65.0.4.68
 
 # 3 Install Java 8
 - sudo apt-get update
@@ -38,3 +38,10 @@ ssh -i ~/Documents/ad/aws-and-docker/0_secrets/aws_ad89.pem ubuntu@13.201.32.143
 - start repl using : `lein repl :headless`
 - in another terminal, connect to it using : `lein repl :connect localhost:45411`
 
+
+# 7 Spawn another EC2 for docker & monitoring
+- type : t2.xLarge (4 vCPU & 16 GB RAM)
+- clone repo
+- install docker & docker-compose here
+- start docker & monitoring components on this machine
+- point clj-machine to point to this machine for kafka & monitoring purposes
