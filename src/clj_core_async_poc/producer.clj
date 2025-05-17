@@ -70,7 +70,7 @@
 
 
 (defn main
-  []
+  [series]
   (let [topic (get-in config
                       [:kafka :topic-names
                        (get-in config [:kafka :use_topic])])]
@@ -85,7 +85,7 @@
                                                          :partition (rand-int (get-in config
                                                                                       [:kafka :topic-paritions (get-in config [:kafka :use_topic])]))
                                                          :key nil
-                                                         :value {:times (* 10000 10000) :num (* 1000 1000)}}
+                                                         :value {:times (* 10000 10000) :num (* 1000 1000) :series series}}
                                                         (get-in config [:producer-config :messages-per-minute])
                                                         (get-in config [:producer-config :duration-seconds])))]
             (println (format "started producing msgs to %s" topic))))
@@ -105,4 +105,4 @@
                                                     [:kafka :topic-replication (get-in config [:kafka :use_topic])])})
 
   ;; start production of msgs by invoking the main fn
-  (main))
+  (main "series-1"))
