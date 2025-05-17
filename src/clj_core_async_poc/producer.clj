@@ -110,27 +110,4 @@
                                                     [:kafka :topic-replication (get-in config [:kafka :use_topic])])})
 
   ;; start production of msgs by invoking the main fn
-  (main "series-1")
-
-
-  (defn k
-    []
-    (loop [event-id 10]
-      (println "loop start...")
-      (if (> event-id 0)
-        (do (println "in loop ...")
-            (Thread/sleep 100)
-            (recur (dec event-id)))
-        (do (println "out of loop 1...")
-            (println "out of loop 2..."))))
-    (println "out of loop 3..."))
-  
-  
-
-  (k)
-  
-  
-  
-  
-  
-  )
+  (main "series-1"))
