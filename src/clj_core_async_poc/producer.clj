@@ -49,13 +49,14 @@
       (let [curr-epoc (System/currentTimeMillis)
             diff (- end-time curr-epoc)
             sleep (* rps 1000)]
-        (println (format "diff : %s , rps : %s , sleep for sec : %s , curr-epoc : %s"
+        (println (format "[%s] diff : %s , rps : %s , sleep for sec : %s"
+                         (:series data)
                          diff
                          rps
-                         sleep
-                         curr-epoc))
+                         sleep))
         (when (< curr-epoc end-time)
-          (println (format "Sending event : # [%d] by [%s] in topic [%s] , partition [%s]"
+          (println (format "[%s] Sending event : # [%d] by [%s] in topic [%s] , partition [%s]"
+                           (:series data)
                            event-num
                            (.getName (Thread/currentThread))
                            (:topic data)
@@ -64,7 +65,9 @@
           (push-event producer (assoc-in data [:value :id] event-num))
           (Thread/sleep sleep)
           (recur (inc event-num)))))
-    (println (format "Producer finished. Start epoch: %d, End epoch: %d"
+    (println (format "[%s] Producer finished. Elapsed seconds : [%d]. Start epoch: %d, End epoch: %d"
+                     (:series data)
+                     (/ (- (System/currentTimeMillis) start-epoch) 1000.0)
                      start-epoch
                      (System/currentTimeMillis)))))
 

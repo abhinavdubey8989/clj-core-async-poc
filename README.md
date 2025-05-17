@@ -27,7 +27,7 @@ This is a PoC to see the impact on both : throughput & total processing time by 
 `Start producing msgs`
 (do (require '[clj-core-async-poc.producer])
     (in-ns 'clj-core-async-poc.producer)
-    (main))
+    (main "series-2"))
 
 
 # [Docker] Inspect Kafka topic : start console consumer
