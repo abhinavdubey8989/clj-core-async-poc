@@ -46,9 +46,9 @@ emit_load_avg_metrics() {
     norm5=$(echo "scale=2; $load5 / $cores" | bc)
     norm15=$(echo "scale=2; $load15 / $cores" | bc)
 
-    send_metrics_to_statsd $norm1 "one"
-    send_metrics_to_statsd $norm5 "five"
-    send_metrics_to_statsd $norm15 "fifteen"
+    send_metrics_to_statsd $norm1 "load_avg.one"
+    send_metrics_to_statsd $norm5 "load_avg.five"
+    send_metrics_to_statsd $norm15 "load_avg.fifteen"
 }
 
 emit_cpu_metrics() {
@@ -68,7 +68,7 @@ emit_cpu_metrics() {
     for i in "${!cpu_values[@]}"; do
         label=${labels[$i]:-field_$i} # fallback label if needed
         percent=$(echo "scale=2; ${cpu_values[$i]} * 100 / $total" | bc)
-        send_metrics_to_statsd $percent $label
+        send_metrics_to_statsd $percent "cpu.$label"
     done
 }
 
