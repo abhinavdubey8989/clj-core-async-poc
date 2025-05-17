@@ -42,8 +42,9 @@
       ;; logging
     (let [end-time        (System/currentTimeMillis)
           elapsed-seconds (/ (- end-time start-time) 1000.0)]
-      (println {:id       (:id event)
-                :thread   (.getName (Thread/currentThread))
+      (println {:id (:id event)
+                :event  event
+                :thread (.getName (Thread/currentThread))
                 :duration elapsed-seconds}))
     
       ;; increment metric
