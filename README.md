@@ -18,6 +18,12 @@ This is a PoC to see the impact on both : throughput & total processing time by 
     (main))
 
 
+`Start multi-th consumer`
+(do (require '[clj-core-async-poc.multi-threaded-consumer])
+    (in-ns 'clj-core-async-poc.multi-threaded-consumer)
+    (main))
+
+
 `Start producing msgs`
 (do (require '[clj-core-async-poc.producer])
     (in-ns 'clj-core-async-poc.producer)

@@ -47,7 +47,6 @@
 (defn start-consumer-polling
   "Start polling for kafka messages"
   [consumer]
-  (println "single-th consumer , invoking start-consumer-polling")
   (loop []
     (let [records (gregor/poll consumer)]
       (doseq [{:keys [value]
@@ -59,25 +58,25 @@
 
 (defn main
   []
-  (statsd/setup (get-in config [:statsd :host])
-                (get-in config [:statsd :port]))
-  (let [topic (get-in config [:kafka :topic-names :single-threaded])
-        consumer (get-consumer {:servers (get-in config [:kafka :conn-string])
-                                :group-id (get-in config [:kafka :consumer-group-id :single-threaded])
-                                :topics [topic]
-                                :config {"value.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"}})
-        ;; Run consumer on a separate thread so that it doesn't block the REPL
-        consumer-thread (future (start-consumer-polling consumer))]
-    (print (format "started single threaded consumer using topic %s ... "
-                   topic))))
+  (let [topic (get-in config [:kafka :topic-names :single-threaded])]
+    (if (gregor/topic-exists? {:connection-string (get-in config
+                                                          [:zookeeper :conn-string])}
+                              topic) 
+      (do (statsd/setup (get-in config [:statsd :host])
+                        (get-in config [:statsd :port]))
+          (let [consumer (get-consumer {:servers (get-in config [:kafka :conn-string])
+                                        :group-id (get-in config [:kafka :consumer-group-id :single-threaded])
+                                        :topics [topic]
+                                        :config {"value.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"}})
+                ;; Run consumer on a separate thread so that it doesn't block the REPL
+                consumer-thread (future (start-consumer-polling consumer))]
+            (print (format "started single-threaded consumer using topic %s ... " topic))))
+      (do (println (format
+                    "Topic [%s] does not exist yet, pls explicitely create it before starting single-threaded consumer"
+                    topic))
+          (System/exit 0)))))
 
 
 (comment
-  ;; start consumption of msgs by invoking the main fn
-  (def consumer (get-consumer {:servers "65.0.4.68:9092"
-                               :group-id "group-1"
-                               :topics ["core_async_poc_single_th_1"]
-                               :config {"value.deserializer" "org.apache.kafka.common.serialization.StringDeserializer"}}))
-  
-  (main)
-  )
+  ;; start single threaded consumer
+  (main))

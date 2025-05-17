@@ -16,7 +16,7 @@
 
 
 stop() {
-    docker-compose down
+    sudo docker compose down
     docker container prune -f
     echo "stopped $PWD ..."
 }
@@ -27,14 +27,14 @@ stop() {
 
 start_detach() {
     echo "detach mode"
-    docker-compose up -d
+    sudo docker compose up -d
 }
 
 
 start_attach() {
     start_detach
     # echo "attach mode"
-    # docker-compose up
+    # sudo docker compose up
 }
 
 
