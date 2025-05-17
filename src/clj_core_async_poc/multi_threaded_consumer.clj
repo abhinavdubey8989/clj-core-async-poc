@@ -17,14 +17,20 @@
 
 (defonce worker-channels (atom []))
 
+(defonce ^{:private true :doc "Create consumer only once"}
+  consumer nil)
+
 
 (defn get-consumer
   "Return kafka consumer object"
   [config]
-  (gregor/consumer (:servers config)
-                   (:group-id config)
-                   (:topics config)
-                   (:config config)))
+  (when (nil? consumer)
+    (println "Multi-threaded consumer is nil, creating connection")
+    (alter-var-root #'consumer (constantly (gregor/consumer (:servers config)
+                                                            (:group-id config)
+                                                            (:topics config)
+                                                            (:config config)))))
+  consumer)
 
 
 (defn process-event

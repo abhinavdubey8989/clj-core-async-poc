@@ -1,5 +1,5 @@
 {:producer-config {:messages-per-minute 100
-                   :duration-seconds    10}
+                   :duration-seconds    120}
  :zookeeper       {:conn-string "mtr_host:2181"}
  :kafka           {:conn-string "mtr_host:9092"
                    
