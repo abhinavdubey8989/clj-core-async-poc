@@ -14,7 +14,7 @@ ssh -i ~/Documents/ad/aws-and-docker/0_secrets/aws_ad89.pem ubuntu@65.0.4.68
 - which java (must give `/usr/bin/java`)
 
 # 5 Set Java Home env variable
-- edit this file using vim : `vim /etc/environment`
+- edit this file using vim : `sudo vim /etc/environment`
 - add this line at last : `JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64"`
 - load this env : `source /etc/environment`
 - check if loaded correctly : `echo $JAVA_HOME`
@@ -33,13 +33,19 @@ ssh -i ~/Documents/ad/aws-and-docker/0_secrets/aws_ad89.pem ubuntu@65.0.4.68
 
 
 # 5 clone git repo
+git clone https://github.com/abhinavdubey8989/clj-core-async-poc.git
+start emitting system metrics
 
-# 6 Start repl & connect to it
+# 6 set /etc/hosts
+<ip-of-monitoring-ec2> mtr_host
+
+# 7 Start repl & connect to it
 - start repl using : `lein repl :headless`
 - in another terminal, connect to it using : `lein repl :connect localhost:45411`
+- or run : `lein run`
 
 
-# 7 Spawn another EC2 for docker & monitoring
+# 8 Spawn another EC2 for docker & monitoring
 - type : t2.xLarge (4 vCPU & 16 GB RAM)
 - clone repo
 - install docker & docker-compose here
