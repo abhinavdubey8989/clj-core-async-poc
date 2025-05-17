@@ -59,7 +59,6 @@
     (let [records (gregor/poll consumer)]
       (doseq [{:keys [value]
                :as   record} records]
-        (println "single-th consumer , invoking process-event")
         (process-event value))
       (recur))))
 
